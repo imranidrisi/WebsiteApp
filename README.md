@@ -1,3 +1,9 @@
-Welcome to the AstraFun app! Click the link below to download and enjoy the app.
+AstraFun App
+100+ Games | ₹100 Bonus | Direct Download
 
-[Download AstraFun App](https://drive.google.com/uc?export=download&id=17KbtAciePl1Q6fTCdWBfUSIV1sXVWIsO)
+🎮 One app – endless games
+💸 Get ₹100 instantly
+📲 No sign-up, no ads
+
+👇Download Now – Tap & Play Instantly!
+https://drive.google.com/uc?export=download&id=1AhSKT5xgYKoJwVjKimyKXOq-H0MoSfHB
