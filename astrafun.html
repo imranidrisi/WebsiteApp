@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Earn Tokens App - v2.3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #1a0033; /* Dark Nebula default */
+            color: #ffffff;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        body.cosmic-light {
+            background: #e0e0e0;
+            color: #333333;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #ff00cc, #00e5ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 15px 0;
+            box-shadow: 0 12px 25px rgba(255, 0, 204, 0.5);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .cosmic-light .button {
+            background: linear-gradient(45deg, #ff6f61, #ffd700);
+            box-shadow: 0 12px 25px rgba(255, 111, 97, 0.5);
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(255, 0, 204, 0.7);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(255, 0, 204, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 204, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(255, 0, 204, 0.5); }
+        }
+
+        .tokens {
+            font-size: 38px;
+            font-weight: bold;
+            margin: 30px;
+            color: #00e5ff;
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+            letter-spacing: 1px;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        .cosmic-light .tokens {
+            color: #ff6f61;
+            text-shadow: 0 0 12px rgba(255, 111, 97, 0.8);
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px rgba(0, 229, 255, 0.8); }
+            100% { text-shadow: 0 0 15px rgba(0, 229, 255, 1); }
+        }
+
+        .progress-container {
+            width: 80%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(45deg, #ff00cc, #00e5ff);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .cosmic-light .progress-bar {
+            background: linear-gradient(45deg, #ff6f61, #ffd700);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+        }
+
+        .popup-content {
+            background: linear-gradient(135deg, #ff00cc, #00e5ff);
+            padding: 25px;
+            border-radius: 25px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            color: #ffffff;
+            border: 4px solid #ffffff;
+            box-shadow: 0 15px 40px rgba(255, 0, 204, 0.6);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .cosmic-light .popup-content {
+            background: linear-gradient(135deg, #ff6f61, #ffd700);
+            box-shadow: 0 15px 40px rgba(255, 111, 97, 0.6);
+        }
+
+        .popup-overlay.active .popup-content {
+            transform: scale(1);
+        }
+
+        .ad-banner-bottom {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .token-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 50px;
+            cursor: pointer;
+            z-index: 2000;
+            color: #ffeb3b;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.9);
+            transition: transform 0.4s ease, color 0.3s ease;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .token-icon:hover {
+            transform: rotate(360deg) scale(1.1);
+            color: #fff176;
+        }
+
+        .withdraw-button {
+            background: linear-gradient(45deg, #00e676, #ff4081);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 15px 0;
+            display: none;
+            box-shadow: 0 10px 20px rgba(0, 230, 118, 0.5);
+            font-weight: 600;
+        }
+
+        .cosmic-light .withdraw-button {
+            background: linear-gradient(45deg, #00b0ff, #ffca28);
+            box-shadow: 0 10px 20px rgba(0, 176, 255, 0.5);
+        }
+
+        .daily-bonus {
+            background: linear-gradient(45deg, #00b0ff, #ffca28);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 15px 0;
+            box-shadow: 0 10px 20px rgba(0, 176, 255, 0.5);
+            font-weight: 600;
+        }
+
+        .cosmic-light .daily-bonus {
+            background: linear-gradient(45deg, #ff4081, #ffd700);
+            box-shadow: 0 10px 20px rgba(255, 64, 129, 0.5);
+        }
+
+        .spin-button {
+            background: linear-gradient(45deg, #ff6f00, #ffeb3b);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 15px 0;
+            box-shadow: 0 10px 20px rgba(255, 111, 0, 0.5);
+            font-weight: 600;
+        }
+
+        .cosmic-light .spin-button {
+            background: linear-gradient(45deg, #00e676, #ff6f61);
+            box-shadow: 0 10px 20px rgba(0, 230, 118, 0.5);
+        }
+
+        .custom-alert {
+            position: fixed;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #ff6f00, #00e5ff);
+            padding: 25px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 15px 35px rgba(255, 111, 0, 0.6);
+            display: none;
+            z-index: 1500;
+            max-width: 90%;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 2px solid #ffffff;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .custom-alert.active {
+            opacity: 1;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .language-select {
+            position: fixed;
+            bottom: 120px;
+            left: 20px;
+            z-index: 2000;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #ff4081, #ffca28);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .language-select:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.2);
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            z-index: 2000;
+            font-size: 40px;
+            cursor: pointer;
+            color: #ffeb3b;
+            text-shadow: 0 0 20px rgba(255, 235, 59, 0.9);
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .music-control:hover {
+            transform: scale(1.2);
+            color: #fff176;
+        }
+
+        .ai-watermark {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1000;
+        }
+
+        .cosmic-light .ai-watermark {
+            color: rgba(51, 51, 51, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .button, .daily-bonus, .withdraw-button, .spin-button {
+                padding: 12px 25px;
+                font-size: 18px;
+            }
+            .tokens {
+                font-size: 32px;
+                margin: 20px;
+            }
+            .popup-content {
+                padding: 20px;
+                max-width: 85%;
+            }
+            .token-icon {
+                font-size: 40px;
+                top: 15px;
+                right: 15px;
+            }
+            .custom-alert {
+                font-size: 20px;
+                padding: 20px;
+            }
+            .ad-banner-bottom {
+                height: 80px;
+            }
+            .music-control {
+                font-size: 30px;
+                bottom: 100px;
+            }
+            .language-select {
+                bottom: 100px;
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .button, .daily-bonus, .withdraw-button, .spin-button {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            .tokens {
+                font-size: 28px;
+            }
+            .popup-content {
+                padding: 15px;
+                max-width: 90%;
+            }
+            .token-icon {
+                font-size: 35px;
+            }
+            .custom-alert {
+                font-size: 18px;
+                padding: 15px;
+            }
+            .language-select {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ad-banner-bottom">
+        <script type="text/javascript">
+            atOptions = {
+                'key': 'fef31071a83c7e23748c2efc47b7f646',
+                'format': 'iframe',
+                'height': 90,
+                'width': 728,
+                'params': {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/fef31071a83c7e23748c2efc47b7f646/invoke.js"></script>
+    </div>
+
+    <div class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <select class="language-select" id="languageSelect">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+    </select>
+
+    <div class="tokens" id="tokensDisplay">Tokens: 0</div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <button class="daily-bonus" id="dailyBonusButton" style="display: none;">
+        <i class="fas fa-gift"></i> Claim Daily Bonus
+    </button>
+
+    <button class="button" id="watchAdButton">Get More Tokens (Watch Ad)</button>
+
+    <button class="spin-button" id="spinButton">Spin for Bonus!</button>
+
+    <div class="token-icon" id="tokenIcon" title="Withdraw Tokens">
+        <i class="fas fa-wallet"></i>
+    </div>
+
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-content">
+            <script type="text/javascript">
+                atOptions = {
+                    'key': '64413f8141bdc804a0fa108dd8a0ec82',
+                    'format': 'iframe',
+                    'height': 250,
+                    'width': 300,
+                    'params': {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/64413f8141bdc804a0fa108dd8a0ec82/invoke.js"></script>
+            <div id="countdownTimer">Next action in 3 seconds...</div>
+        </div>
+    </div>
+
+    <button class="withdraw-button" id="withdrawButton">Withdraw</button>
+
+    <div class="custom-alert" id="customAlert"></div>
+
+    <div class="music-control" id="musicControl" title="Toggle Background Music">
+        <i class="fas fa-volume-up"></i>
+    </div>
+
+    <div class="ai-watermark">Powered by AI - v2.3</div>
+
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/beep-02.mp3"></audio>
+    <audio id="successSound" src="https://www.soundjay.com/misc/sounds/coin-01.mp3"></audio>
+    <audio id="bgMusic" src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" loop></audio>
+
+    <script>
+        let tokens = localStorage.getItem('tokens') ? parseInt(localStorage.getItem('tokens')) : 0;
+        let clickCount = 0;
+        let lastSpinDate = localStorage.getItem('lastSpinDate');
+        let canSpin = true;
+        const watchAdButton = document.getElementById('watchAdButton');
+        const withdrawButton = document.getElementById('withdrawButton');
+        const popupOverlay = document.getElementById('popupOverlay');
+        const tokensDisplay = document.getElementById('tokensDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const countdownTimer = document.getElementById('countdownTimer');
+        const dailyBonusButton = document.getElementById('dailyBonusButton');
+        const spinButton = document.getElementById('spinButton');
+        const customAlert = document.getElementById('customAlert');
+        const clickSound = document.getElementById('clickSound');
+        const successSound = document.getElementById('successSound');
+        const tokenIcon = document.getElementById('tokenIcon');
+        const languageSelect = document.getElementById('languageSelect');
+        const themeToggle = document.getElementById('themeToggle');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicControl = document.getElementById('musicControl');
+        let lastClaimDate = localStorage.getItem('lastClaimDate');
+        let dailyBonusAvailable = false;
+        let isMusicPlaying = false;
+
+        tokensDisplay.textContent = `Tokens: ${tokens}`;
+        updateProgressBar();
+
+        // Automatic Fullscreen
+        window.addEventListener('load', () => {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Error enabling fullscreen: ${err.message}`);
+            });
+            checkDailyBonus();
+            checkSpinAvailability();
+            checkWithdrawAvailability();
+            showAlert("welcome", 4000);
+        });
+
+        // Prevent User Data Deletion
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('tokens', tokens);
+            localStorage.setItem('lastClaimDate', lastClaimDate);
+            localStorage.setItem('lastSpinDate', lastSpinDate);
+        });
+
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('cosmic-light');
+            themeToggle.innerHTML = document.body.classList.contains('cosmic-light') ? 
+                '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // Language Selection
+        const translations = {
+            en: {
+                watchAd: "Get More Tokens (Watch Ad)",
+                dailyBonus: "Claim Daily Bonus",
+                withdraw: "Withdraw",
+                spin: "Spin for Bonus!",
+                welcome: "Welcome to Earn Tokens v2.3!",
+                adWatched: "Ad Watched: +10 Tokens!",
+                dailyBonusClaimed: "Daily Bonus: +100 Tokens!",
+                spinBonus: "Spin Bonus: +{amount} Tokens!",
+                withdrawMin: "Need 10,000 tokens to withdraw!",
+                withdrawSuccess: "Success: ₹200 Redeemed!",
+                internetRequired: "Internet required! Please connect.",
+                countdown: "Next action in {seconds} seconds...",
+                spinCooldown: "Spin again in {hours}h {minutes}m"
+            },
+            hi: {
+                watchAd: "अधिक टोकन प्राप्त करें (विज्ञापन देखें)",
+                dailyBonus: "दैनिक बोनस प्राप्त करें",
+                withdraw: "निकासी",
+                spin: "बोनस के लिए स्पिन करें!",
+                welcome: "टोकन कमाई v2.3 में आपका स्वागत है!",
+                adWatched: "विज्ञापन देखा: +10 टोकन!",
+                dailyBonusClaimed: "दैनिक बोनस: +100 टोकन!",
+                spinBonus: "स्पिन बोनस: +{amount} टोकन!",
+                withdrawMin: "निकासी के लिए 10,000 टोकन चाहिए!",
+                withdrawSuccess: "सफलता: ₹200 भुनाए गए!",
+                internetRequired: "इंटरनेट आवश्यक! कृपया कनेक्ट करें।",
+                countdown: "{seconds} सेकंड में अगली कार्रवाई...",
+                spinCooldown: "{hours}घंटे {minutes}मिनट में फिर से स्पिन करें"
+            }
+        };
+
+        function updateLanguage() {
+            const lang = languageSelect.value;
+            watchAdButton.textContent = translations[lang].watchAd;
+            dailyBonusButton.innerHTML = `<i class="fas fa-gift"></i> ${translations[lang].dailyBonus}`;
+            withdrawButton.textContent = translations[lang].withdraw;
+            spinButton.textContent = canSpin ? translations[lang].spin : translations[lang].spinCooldown.replace("{hours}", Math.floor((86400000 - (Date.now() - lastSpinDate)) / 3600000)).replace("{minutes}", Math.floor(((86400000 - (Date.now() - lastSpinDate)) % 3600000) / 60000));
+            tokenIcon.title = translations[lang].withdraw;
+        }
+
+        languageSelect.addEventListener('change', updateLanguage);
+
+        // Custom Alert Function
+        function showAlert(text, duration = 3000, amount = 0) {
+            const lang = languageSelect.value;
+            let message = translations[lang][text] || text;
+            if (amount) message = message.replace("{amount}", amount);
+            customAlert.textContent = message;
+            customAlert.style.display = 'block';
+            customAlert.classList.add('active');
+            setTimeout(() => {
+                customAlert.classList.remove('active');
+                setTimeout(() => {
+                    customAlert.style.display = 'none';
+                }, 300);
+            }, duration);
+        }
+
+        // Progress Bar Update
+        function updateProgressBar() {
+            const progress = (tokens / 10000) * 100;
+            progressBar.style.width = `${Math.min(progress, 100)}%`;
+        }
+
+        // Daily Bonus System
+        function checkDailyBonus() {
+            const now = Date.now();
+            if (!lastClaimDate || (now - lastClaimDate) >= 86400000) {
+                dailyBonusButton.style.display = 'block';
+                dailyBonusAvailable = true;
+                updateLanguage();
+            } else {
+                updateBonusCountdown();
+            }
+        }
+
+        function updateBonusCountdown() {
+            const remainingTime = 86400000 - (Date.now() - lastClaimDate);
+            const hours = Math.floor(remainingTime / 3600000);
+            const minutes = Math.floor((remainingTime % 3600000) / 60000);
+            const lang = languageSelect.value;
+            dailyBonusButton.innerHTML = `<i class="fas fa-clock"></i> ${lang === 'en' ? `Next in ${hours}h ${minutes}m` : `अगला ${hours}घंटे ${minutes}मिनट में`}`;
+            dailyBonusButton.style.display = 'block';
+        }
+
+        dailyBonusButton.addEventListener('click', () => {
+            if (dailyBonusAvailable) {
+                clickSound.play();
+                tokens += 100;
+                tokensDisplay.textContent = `Tokens: ${tokens}`;
+                localStorage.setItem('tokens', tokens);
+                lastClaimDate = Date.now();
+                localStorage.setItem('lastClaimDate', lastClaimDate);
+                dailyBonusAvailable = false;
+                setInterval(updateBonusCountdown, 60000);
+                checkDailyBonus();
+                updateProgressBar();
+                successSound.play();
+                showAlert("dailyBonusClaimed");
+            }
+        });
+
+        // Spin Wheel System
+        function checkSpinAvailability() {
+            const now = Date.now();
+            if (!lastSpinDate || (now - lastSpinDate) >= 86400000) {
+                canSpin = true;
+            } else {
+                canSpin = false;
+                updateSpinCooldown();
+            }
+            updateLanguage();
+        }
+
+        function updateSpinCooldown() {
+            const remainingTime = 86400000 - (Date.now() - lastSpinDate);
+            const hours = Math.floor(remainingTime / 3600000);
+            const minutes = Math.floor((remainingTime % 3600000) / 60000);
+            const lang = languageSelect.value;
+            spinButton.textContent = translations[lang].spinCooldown.replace("{hours}", hours).replace("{minutes}", minutes);
+        }
+
+        spinButton.addEventListener('click', () => {
+            if (canSpin) {
+                clickSound.play();
+                const spinAmount = Math.floor(Math.random() * 50) + 10; // 10-59 tokens
+                tokens += spinAmount;
+                tokensDisplay.textContent = `Tokens: ${tokens}`;
+                localStorage.setItem('tokens', tokens);
+                lastSpinDate = Date.now();
+                localStorage.setItem('lastSpinDate', lastSpinDate);
+                canSpin = false;
+                setInterval(updateSpinCooldown, 60000);
+                checkSpinAvailability();
+                updateProgressBar();
+                successSound.play();
+                showAlert("spinBonus", 4000, spinAmount);
+            }
+        });
+
+        // Token System
+        function checkInternet() {
+            if (!navigator.onLine) {
+                showAlert("internetRequired");
+                return false;
+            }
+            return true;
+        }
+
+        watchAdButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!checkInternet()) return;
+            clickSound.play();
+
+            clickCount++;
+            if (clickCount === 3) {
+                window.open("https://www.astrafun.in/", "_blank");
+                clickCount = 0;
+            }
+
+            popupOverlay.style.display = 'flex';
+            setTimeout(() => {
+                popupOverlay.classList.add('active');
+            }, 10);
+
+            setTimeout(() => {
+                if (!checkInternet()) return;
+                
+                tokens += 10;
+                tokensDisplay.textContent = `Tokens: ${tokens}`;
+                localStorage.setItem('tokens', tokens);
+                updateProgressBar();
+
+                let countdown = 3;
+                const lang = languageSelect.value;
+                countdownTimer.textContent = translations[lang].countdown.replace("{seconds}", countdown);
+                const countdownInterval = setInterval(() => {
+                    countdown -= 1;
+                    countdownTimer.textContent = translations[lang].countdown.replace("{seconds}", countdown);
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        popupOverlay.classList.remove('active');
+                        setTimeout(() => {
+                            popupOverlay.style.display = 'none';
+                        }, 300);
+                    }
+                }, 1000);
+                successSound.play();
+                showAlert("adWatched");
+            }, 3000);
+        });
+
+        // Withdrawal System
+        function checkWithdrawAvailability() {
+            if (tokens >= 10000) {
+                withdrawButton.style.display = 'block';
+            }
+        }
+
+        tokenIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clickSound.play();
+            if (tokens < 10000) {
+                showAlert("withdrawMin", 4000);
+            } else {
+                withdrawButton.click();
+            }
+        });
+
+        withdrawButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!checkInternet()) return;
+            clickSound.play();
+
+            if (tokens >= 10000) {
+                window.open("https://wa.me/917715952502?text=Redeemed 10000 tokens for ₹200", "_blank");
+                tokens -= 10000;
+                tokensDisplay.textContent = `Tokens: ${tokens}`;
+                localStorage.setItem('tokens', tokens);
+                updateProgressBar();
+                successSound.play();
+                showAlert("withdrawSuccess", 4000);
+                withdrawButton.style.display = 'none';
+            }
+        });
+
+        // Background Music Control
+        musicControl.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                isMusicPlaying = false;
+            } else {
+                bgMusic.play();
+                musicControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+                isMusicPlaying = true;
+            }
+        });
+
+        // Initialize Language
+        updateLanguage();
+    </script>
+
+</body>
+</html>
